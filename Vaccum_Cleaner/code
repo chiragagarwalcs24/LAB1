@@ -1,0 +1,94 @@
+print("Name: CHIRAG AGARWAL")
+print("USN: 1WA24CS098")
+print()
+
+import random
+
+class SimpleTwoRoomVacuumCleanerAgent:
+    def __init__(self):
+        print("\n--- Initial Room Setup ---")
+        # Prompt user for initial dirt status of Room A
+        while True:
+            try:
+                dirt_a = int(input("Enter initial dirt status for Room A (0 for clean, 1 for dirty): "))
+                if dirt_a in [0, 1]:
+                    break
+                else:
+                    print("Invalid input. Please enter 0 or 1.")
+            except ValueError:
+                print("Invalid input. Please enter a number.")
+
+        # Prompt user for initial dirt status of Room B
+        while True:
+            try:
+                dirt_b = int(input("Enter initial dirt status for Room B (0 for clean, 1 for dirty): "))
+                if dirt_b in [0, 1]:
+                    break
+                else:
+                    print("Invalid input. Please enter 0 or 1.")
+            except ValueError:
+                print("Invalid input. Please enter a number.")
+
+        self.rooms = {'A': dirt_a, 'B': dirt_b}
+
+        # Prompt user for initial robot location
+        while True:
+            initial_location = input("Enter initial robot location (A or B): ").upper()
+            if initial_location in ['A', 'B']:
+                self.current_room = initial_location
+                break
+            else:
+                print("Invalid input. Please enter 'A' or 'B'.")
+
+        self.actions_taken = 0
+        print(f"Initial room states: {self.rooms}, Starting in room: {self.current_room}")
+
+    def sense(self):
+        """Senses if the current room is dirty."""
+        return self.rooms[self.current_room] == 1
+
+    def suck(self):
+        """Cleans the current room if it's dirty."""
+        if self.sense():
+            self.rooms[self.current_room] = 0
+            print(f"Action: SUCK in Room {self.current_room} (Room is now clean)")
+            self.actions_taken += 1
+            return True
+        return False
+
+    def move(self):
+        """Moves to the other room."""
+        if self.current_room == 'A':
+            self.current_room = 'B'
+            print("Action: MOVE RIGHT to Room B")
+        else:
+            self.current_room = 'A'
+            print("Action: MOVE LEFT to Room A")
+        self.actions_taken += 1
+
+    def run(self, max_steps=100):
+        """Runs the agent until both rooms are clean or max_steps is reached."""
+        step = 0
+        while (self.rooms['A'] == 1 or self.rooms['B'] == 1) and step < max_steps:
+            print(f"\n--- Step {step + 1} ---")
+            print(f"Current State: Rooms={self.rooms}, Agent in {self.current_room}")
+
+            if self.suck():
+                # If sucked, check if done or continue in same room
+                pass # Agent just cleaned, will re-sense next iteration
+            else:
+                # If current room is clean, move to the other room
+                self.move()
+            step += 1
+
+        print("\n--- Cleaning Complete ---")
+        print(f"Final room states: {self.rooms}")
+        if self.rooms['A'] == 0 and self.rooms['B'] == 0:
+            print("Both rooms are clean!")
+        else:
+            print("Stopped after reaching max steps, rooms might not be fully clean.")
+        print(f"Total actions taken: {self.actions_taken}")
+
+# Instantiate and run the agent
+agent = SimpleTwoRoomVacuumCleanerAgent()
+agent.run()
